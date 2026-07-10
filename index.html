@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume</title>
+  <style>
+    body {
+      background: #f3f4f6;
+      color: #111827;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 24px;
+    }
+    .resume {
+      max-width: 760px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 12px 36px rgba(15, 23, 42, 0.12);
+      padding: 32px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    h1 {
+      margin: 0;
+      font-size: 2.2rem;
+    }
+    .subtitle {
+      margin: 4px 0 0;
+      color: #6b7280;
+      font-size: 1rem;
+    }
+    .section {
+      margin-top: 28px;
+    }
+    .section h2 {
+      margin-bottom: 12px;
+      font-size: 1.1rem;
+      letter-spacing: 0.02em;
+      color: #111827;
+    }
+    .section p,
+    .section li {
+      line-height: 1.7;
+      color: #374151;
+    }
+    .contact {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .contact-item {
+      padding: 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: #f9fafb;
+    }
+    .list-item {
+      margin-bottom: 16px;
+    }
+    .list-item:last-child {
+      margin-bottom: 0;
+    }
+    .small {
+      color: #6b7280;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="resume">
+    <div class="header">
+      <div>
+        <h1 id="name">Your Name</h1>
+        <p class="subtitle" id="title">Job Title</p>
+      </div>
+      <div class="contact">
+        <div class="contact-item"><strong>Email</strong><p id="email">you@example.com</p></div>
+        <div class="contact-item"><strong>Phone</strong><p id="phone">000-000-0000</p></div>
+        <div class="contact-item"><strong>Website</strong><p id="website">https://example.com</p></div>
+        <div class="contact-item"><strong>Location</strong><p id="location">City, Country</p></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Summary</h2>
+      <p id="summary">A short summary that introduces your experience, skills, and career goals.</p>
+    </div>
+
+    <div class="section">
+      <h2>Experience</h2>
+      <div id="experience"></div>
+    </div>
+
+    <div class="section">
+      <h2>Education</h2>
+      <div id="education"></div>
+    </div>
+
+    <div class="section">
+      <h2>Skills</h2>
+      <p id="skills">Skill1, Skill2, Skill3</p>
+    </div>
+  </div>
+
+  <script>
+    const env = (typeof process !== 'undefined' && process.env) ? process.env : window.env || {};
+
+    const parseJsonList = (value) => {
+      try {
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    };
+
+    const resume = {
+      name: env.RESUME_NAME || 'Your Name',
+      title: env.RESUME_TITLE || 'Job Title',
+      email: env.RESUME_EMAIL || 'you@example.com',
+      phone: env.RESUME_PHONE || '000-000-0000',
+      website: env.RESUME_WEBSITE || 'https://example.com',
+      location: env.RESUME_LOCATION || 'City, Country',
+      summary: env.RESUME_SUMMARY || 'A short summary that introduces your experience, skills, and career goals.',
+      skills: env.RESUME_SKILLS || 'Skill1, Skill2, Skill3',
+      experience: parseJsonList(env.RESUME_EXPERIENCE || '[]'),
+      education: parseJsonList(env.RESUME_EDUCATION || '[]')
+    };
+
+    document.getElementById('name').textContent = resume.name;
+    document.getElementById('title').textContent = resume.title;
+    document.getElementById('email').textContent = resume.email;
+    document.getElementById('phone').textContent = resume.phone;
+    document.getElementById('website').textContent = resume.website;
+    document.getElementById('location').textContent = resume.location;
+    document.getElementById('summary').textContent = resume.summary;
+    document.getElementById('skills').textContent = resume.skills;
+
+    const renderSection = (containerId, items) => {
+      const container = document.getElementById(containerId);
+      if (items.length === 0) {
+        container.innerHTML = '<p class="small">No entries configured. Use env vars to populate this section.</p>';
+        return;
+      }
+      container.innerHTML = items.map(item => {
+        const title = item.title || item.role || 'Untitled';
+        const company = item.company ? `<strong>${companyName(item.company)}</strong>` : '';
+        const meta = [item.company, item.period].filter(Boolean).join(' · ');
+        const details = item.details ? `<p>${item.details}</p>` : '';
+        return `<div class="list-item"><p><strong>${title}</strong> ${meta ? `<span class="small">${meta}</span>` : ''}</p>${details}</div>`;
+      }).join('');
+    };
+
+    const companyName = (company) => company;
+
+    renderSection('experience', resume.experience);
+    renderSection('education', resume.education);
+  </script>
+</body>
+</html>
