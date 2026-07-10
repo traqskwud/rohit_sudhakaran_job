@@ -31,7 +31,7 @@ fetch('/api/send')
     document.getElementById('name').textContent = resume.name;
     document.getElementById('title').textContent = resume.title;
     document.getElementById('email').innerHTML = resume.email;
-    document.getElementById('phone').textContent = resume.phone;
+    document.getElementById('phone').innerHTML = resume.phone;
     document.getElementById('website').textContent = resume.website;
     document.getElementById('location').textContent = resume.location;
     document.getElementById('summary').textContent = resume.summary;
