@@ -30,7 +30,7 @@ fetch('/api/send')
     // 4. Inject the text details into your HTML elements
     document.getElementById('name').textContent = resume.name;
     document.getElementById('title').textContent = resume.title;
-    document.getElementById('email').textContent.innerHTML = resume.email;
+    document.getElementById('email').innerHTML = resume.email;
     document.getElementById('phone').textContent = resume.phone;
     document.getElementById('website').textContent = resume.website;
     document.getElementById('location').textContent = resume.location;
