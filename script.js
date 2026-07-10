@@ -14,7 +14,7 @@
       title: env.RESUME_TITLE || 'Job Title',
       email: env.RESUME_EMAIL || "ts doesnt work",
       phone: env.RESUME_PHONE || '000-000-0000',
-      website: env.RESUME_WEBSITE || 'https://example.com',
+      website: process.env.RESUME_WEBSITE || 'https://example.com',
       location: env.RESUME_LOCATION || 'City, Country',
       summary: env.RESUME_SUMMARY || 'A short summary that introduces your experience, skills, and career goals.',
       skills: env.RESUME_SKILLS || 'Skill1, Skill2, Skill3',
