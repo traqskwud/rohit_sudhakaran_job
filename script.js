@@ -1,27 +1,33 @@
-    const env = (typeof process !== 'undefined' && process.env) ? process.env : window.env || {};
+// 1. Helper function to parse JSON lists safely
+const parseJsonList = (value) => {
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
 
-    const parseJsonList = (value) => {
-      try {
-        const parsed = JSON.parse(value);
-        return Array.isArray(parsed) ? parsed : [];
-      } catch {
-        return [];
-      }
-    };
-
+// 2. Fetch the data bundle from your Vercel backend file
+fetch('/api/send')
+  .then(response => response.json())
+  .then(env => {
+    
+    // 3. Construct your resume object using the server data
     const resume = {
-      name: env.RESUME_NAME || 'Your Name',
-      title: env.RESUME_TITLE || 'Job Title',
-      email: env.RESUME_EMAIL || "ts doesnt work",
-      phone: env.RESUME_PHONE || '000-000-0000',
-      website: process.env.RESUME_WEBSITE || 'https://example.com',
-      location: env.RESUME_LOCATION || 'City, Country',
-      summary: env.RESUME_SUMMARY || 'A short summary that introduces your experience, skills, and career goals.',
-      skills: env.RESUME_SKILLS || 'Skill1, Skill2, Skill3',
-      experience: parseJsonList(env.RESUME_EXPERIENCE || '[]'),
-      education: parseJsonList(env.RESUME_EDUCATION || '[]')
+      name: env.name,
+      title: env.title,
+      email: env.email,
+      phone: env.phone,
+      website: env.website,
+      location: env.location,
+      summary: env.summary,
+      skills: env.skills,
+      experience: parseJsonList(env.experience),
+      education: parseJsonList(env.education)
     };
 
+    // 4. Inject the text details into your HTML elements
     document.getElementById('name').textContent = resume.name;
     document.getElementById('title').textContent = resume.title;
     document.getElementById('email').textContent = resume.email;
@@ -31,22 +37,28 @@
     document.getElementById('summary').textContent = resume.summary;
     document.getElementById('skills').textContent = resume.skills;
 
-    const renderSection = (containerId, items) => {
-      const container = document.getElementById(containerId);
-      if (items.length === 0) {
-        container.innerHTML = '<p class="small">No entries configured. Use env vars to populate this section.</p>';
-        return;
-      }
-      container.innerHTML = items.map(item => {
-        const title = item.title || item.role || 'Untitled';
-        const company = item.company ? `<strong>${companyName(item.company)}</strong>` : '';
-        const meta = [item.company, item.period].filter(Boolean).join(' · ');
-        const details = item.details ? `<p>${item.details}</p>` : '';
-        return `<div class="list-item"><p><strong>${title}</strong> ${meta ? `<span class="small">${meta}</span>` : ''}</p>${details}</div>`;
-      }).join('');
-    };
-
-    const companyName = (company) => company;
-
+    // 5. Render your experience and education arrays
     renderSection('experience', resume.experience);
     renderSection('education', resume.education);
+  })
+  .catch(error => {
+    console.error("Error loading resume data from backend server:", error);
+  });
+
+// 6. Section layout renderer
+const renderSection = (containerId, items) => {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  if (items.length === 0) {
+    container.innerHTML = '<p class="small">No entries configured. Use env vars to populate this section.</p>';
+    return;
+  }
+
+  container.innerHTML = items.map(item => {
+    const title = item.title || item.role || 'Untitled';
+    const meta = [item.company, item.period].filter(Boolean).join(' · ');
+    const details = item.details ? `<p>${item.details}</p>` : '';
+    return `<div class="list-item"><p><strong>${title}</strong> ${meta ? `<span class="small">${meta}</span>` : ''}</p>${details}</div>`;
+  }).join('');
+};
